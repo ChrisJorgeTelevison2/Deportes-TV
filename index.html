@@ -4,135 +4,358 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fanatic TV</title>
+
 <style>
-/* Reset */
-* {margin:0; padding:0; box-sizing:border-box;}
-body {font-family:Arial,sans-serif; background:#f2f2f2; color:#333;}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#090909;
+    color:#fff;
+    font-family:Arial,sans-serif;
+}
 
 /* Header */
-header {display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:#1a1a1a; color:white;}
-header .logo {font-size:1.8rem; font-weight:bold;}
-header nav a {color:white; text-decoration:none; margin-left:20px;}
-header nav a:hover {text-decoration:underline;}
-header .login-btn {padding:8px 15px; background:#0073e6; color:white; border-radius:5px; text-decoration:none;}
 
-/* Hero */
-.hero {background:#0073e6; color:white; padding:80px 30px; text-align:center;}
-.hero h1 {font-size:2.5rem; margin-bottom:10px;}
-.hero p {font-size:1.2rem;}
+header{
+    background:#000;
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 30px;
+    border-bottom:1px solid #222;
+}
 
-/* Live Now Carousel */
-.carousel {display:flex; overflow-x:auto; gap:15px; padding:20px;}
-.carousel::-webkit-scrollbar {display:none;}
-.carousel-card {flex:0 0 auto; width:200px; border-radius:10px; overflow:hidden; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center; transition:transform 0.3s;}
-.carousel-card:hover {transform:scale(1.05);}
-.carousel-card img {width:100%; display:block;}
-.carousel-card h4 {padding:10px 0;}
-.carousel-card a {display:inline-block; margin-bottom:10px; padding:6px 12px; background:#0073e6; color:white; text-decoration:none; border-radius:5px;}
-.carousel-card a:hover {background:#005bb5;}
+.logo{
+    color:#ff5a00;
+    font-size:2rem;
+    font-weight:bold;
+}
 
-/* Featured Channels Grid */
-.channels-grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; padding:30px;}
-.channel-card {background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center; transition:transform 0.3s;}
-.channel-card:hover {transform:scale(1.05);}
-.channel-card img {width:100%; display:block;}
-.channel-card h3 {padding:10px 0;}
-.channel-card a {display:inline-block; margin-bottom:10px; padding:8px 12px; background:#0073e6; color:white; text-decoration:none; border-radius:5px;}
-.channel-card a:hover {background:#005bb5;}
+nav{
+    display:flex;
+    gap:25px;
+}
+
+nav a{
+    color:#ddd;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+nav a:hover{
+    color:white;
+}
+
+.icons{
+    display:flex;
+    gap:15px;
+    font-size:1.3rem;
+}
+
+/* Sections */
+
+.section{
+    padding:25px 30px;
+}
+
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.section-header h2{
+    font-size:1.8rem;
+}
+
+.section-header a{
+    color:#ccc;
+    text-decoration:none;
+}
+
+/* Horizontal Scroll */
+
+.carousel{
+    display:flex;
+    gap:20px;
+    overflow-x:auto;
+    scrollbar-width:none;
+}
+
+.carousel::-webkit-scrollbar{
+    display:none;
+}
+
+/* Cards */
+
+.card{
+    min-width:330px;
+    background:#151515;
+    border-radius:15px;
+    overflow:hidden;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:scale(1.04);
+}
+
+.card img{
+    width:100%;
+    height:190px;
+    object-fit:cover;
+}
+
+.card-content{
+    padding:15px;
+}
+
+.live{
+    background:#ff3b30;
+    color:white;
+    padding:4px 8px;
+    border-radius:5px;
+    font-size:.8rem;
+    display:inline-block;
+    margin-bottom:10px;
+}
+
+.card h3{
+    margin-bottom:5px;
+}
+
+.card p{
+    color:#aaa;
+}
+
+/* Banner */
+
+.banner{
+    margin:20px 30px;
+    border-radius:20px;
+    overflow:hidden;
+    background:linear-gradient(90deg,#111,#222);
+    padding:50px;
+    text-align:center;
+}
+
+.banner h1{
+    color:#ff5a00;
+    font-size:3rem;
+}
+
+.banner p{
+    margin-top:10px;
+    color:#ccc;
+}
+
+/* Categories */
+
+.categories{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    padding:10px 30px 25px;
+}
+
+.category{
+    background:#1a1a1a;
+    border:1px solid #333;
+    padding:10px 18px;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+.category:hover{
+    background:#333;
+}
+
+/* Sports Grid */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:20px;
+}
+
+.grid-card{
+    background:#151515;
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.grid-card img{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+}
+
+.grid-card h3{
+    padding:15px;
+}
 
 /* Footer */
-footer {background:#1a1a1a; color:white; text-align:center; padding:20px; margin-top:40px;}
 
-/* Responsive */
+footer{
+    text-align:center;
+    color:#888;
+    padding:40px;
+}
+
 @media(max-width:768px){
-  .hero h1{font-size:2rem;}
-  .hero p{font-size:1rem;}
-  .carousel-card {width:150px;}
+
+nav{
+    display:none;
+}
+
+.card{
+    min-width:260px;
+}
+
+.banner h1{
+    font-size:2rem;
+}
+
 }
 </style>
 </head>
 <body>
 
 <header>
+
 <div class="logo">Fanatic TV</div>
+
 <nav>
-<a href="index.html">Home</a>
-<a href="channel1.html">Sports</a>
+<a href="#">Home</a>
+<a href="#">Guide</a>
+<a href="#">My Stuff</a>
+<a href="#">Sports</a>
 <a href="#">Movies</a>
-<a href="#">News</a>
+<a href="#">Shows</a>
 </nav>
-<a href="#" class="login-btn">Login</a>
+
+<div class="icons">
+🔍 ⚙️ 🟢
+</div>
+
 </header>
 
-<section class="hero">
-<h1>Live TV & Sports Streaming</h1>
-<p>Watch your favorite channels live, anytime, anywhere.</p>
-</section>
+<section class="section">
 
-<section>
-<h2 style="padding:0 30px; margin-top:20px;">Live Now</h2>
+<div class="section-header">
+<h2>Live TV For You</h2>
+<a href="#">See More</a>
+</div>
+
 <div class="carousel">
-<div class="carousel-card">
-<img src="https://via.placeholder.com/200x120" alt="ESPN">
-<h4>ESPN</h4>
-<a href="channel1.html">Watch</a>
-</div>
-<div class="carousel-card">
-<img src="https://via.placeholder.com/200x120" alt="FOX Sports">
-<h4>FOX Sports</h4>
-<a href="channel1.html">Watch</a>
-</div>
-<div class="carousel-card">
-<img src="https://via.placeholder.com/200x120" alt="NBA TV">
-<h4>NBA TV</h4>
-<a href="#">Watch</a>
-</div>
-<div class="carousel-card">
-<img src="https://via.placeholder.com/200x120" alt="CNN">
-<h4>CNN</h4>
-<a href="#">Watch</a>
-</div>
-<div class="carousel-card">
-<img src="https://via.placeholder.com/200x120" alt="HBO">
-<h4>HBO</h4>
-<a href="#">Watch</a>
+
+<div class="card">
+<img src="https://picsum.photos/500/300?1">
+<div class="card-content">
+<span class="live">LIVE</span>
+<h3>ESPN</h3>
+<p>NBA Basketball</p>
 </div>
 </div>
+
+<div class="card">
+<img src="https://picsum.photos/500/300?2">
+<div class="card-content">
+<span class="live">LIVE</span>
+<h3>FOX Sports</h3>
+<p>MLS Soccer</p>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/500/300?3">
+<div class="card-content">
+<span class="live">LIVE</span>
+<h3>NBA TV</h3>
+<p>Hoops Central</p>
+</div>
+</div>
+
+<div class="card">
+<img src="https://picsum.photos/500/300?4">
+<div class="card-content">
+<span class="live">LIVE</span>
+<h3>CBS</h3>
+<p>The Price Is Right</p>
+</div>
+</div>
+
+</div>
+
 </section>
 
-<section>
-<h2 style="padding:0 30px;">Featured Channels</h2>
-<div class="channels-grid">
-<div class="channel-card">
-<img src="https://via.placeholder.com/300x170" alt="ESPN">
+<div class="banner">
+<h1>Fanatic Sports Network</h1>
+<p>Live Sports • Movies • News • Entertainment</p>
+</div>
+
+<div class="categories">
+<div class="category">News</div>
+<div class="category">Football</div>
+<div class="category">Basketball</div>
+<div class="category">Soccer</div>
+<div class="category">Movies</div>
+<div class="category">Kids</div>
+<div class="category">Networks</div>
+<div class="category">Radio</div>
+</div>
+
+<section class="section">
+
+<div class="section-header">
+<h2>Featured Channels</h2>
+<a href="#">See More</a>
+</div>
+
+<div class="grid">
+
+<div class="grid-card">
+<img src="https://picsum.photos/500/300?5">
 <h3>ESPN</h3>
-<a href="channel1.html">Watch Now</a>
 </div>
-<div class="channel-card">
-<img src="https://via.placeholder.com/300x170" alt="FOX Sports">
+
+<div class="grid-card">
+<img src="https://picsum.photos/500/300?6">
 <h3>FOX Sports</h3>
-<a href="channel1.html">Watch Now</a>
 </div>
-<div class="channel-card">
-<img src="https://via.placeholder.com/300x170" alt="CNN">
-<h3>CNN</h3>
-<a href="#">Watch Now</a>
-</div>
-<div class="channel-card">
-<img src="https://via.placeholder.com/300x170" alt="NBA TV">
+
+<div class="grid-card">
+<img src="https://picsum.photos/500/300?7">
 <h3>NBA TV</h3>
-<a href="#">Watch Now</a>
 </div>
-<div class="channel-card">
-<img src="https://via.placeholder.com/300x170" alt="HBO">
+
+<div class="grid-card">
+<img src="https://picsum.photos/500/300?8">
+<h3>CNN</h3>
+</div>
+
+<div class="grid-card">
+<img src="https://picsum.photos/500/300?9">
 <h3>HBO</h3>
-<a href="#">Watch Now</a>
 </div>
+
+<div class="grid-card">
+<img src="https://picsum.photos/500/300?10">
+<h3>Discovery</h3>
 </div>
+
+</div>
+
 </section>
 
 <footer>
-&copy; 2026 Fanatic TV. All rights reserved.
+© 2026 Fanatic TV. All Rights Reserved.
 </footer>
 
 </body>
