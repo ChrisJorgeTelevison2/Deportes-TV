@@ -1,53 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fanatic Stream</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fanatic Stream</title>
+<style>
+body {margin:0;font-family:Arial,sans-serif;background:#f2f2f2;color:#333;}
+header {background:#1a1a1a;color:#fff;display:flex;justify-content:space-between;align-items:center;padding:15px 30px;}
+header .logo {font-size:1.5rem;font-weight:bold;}
+header nav a {color:white;text-decoration:none;margin-left:20px;}
+header nav a:hover{text-decoration:underline;}
+.hero {background:#0073e6;color:white;padding:60px 30px;text-align:center;}
+.channels-section {padding:30px;}
+.channels-grid {display:flex;flex-wrap:wrap;gap:20px;justify-content:center;}
+.channel-card {background:white;width:300px;border-radius:8px;text-align:center;padding:10px;}
+.channel-card img {width:100%;border-radius:8px;}
+.channel-card a {display:inline-block;margin-top:10px;padding:8px 12px;background:#0073e6;color:white;text-decoration:none;border-radius:4px;}
+.channel-card a:hover{background:#005bb5;}
+footer {background:#1a1a1a;color:white;text-align:center;padding:20px;}
+@media(max-width:768px){.channels-grid{flex-direction:column;align-items:center;}header{flex-direction:column;align-items:flex-start;}header nav{margin-top:10px;}}
+</style>
 </head>
 <body>
-    <header>
-        <div class="logo">Fanatic Stream</div>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="channel1.html">Channel 1</a>
-            <a href="channel2.html">Channel 2</a>
-            <a href="#">Sports</a>
-            <a href="#">Contact</a>
-        </nav>
-    </header>
+<header>
+<div class="logo">Fanatic Stream</div>
+<nav>
+<a href="index.html">Home</a>
+<a href="channel1.html">Channel 1</a>
+<a href="channel2.html">Channel 2</a>
+</nav>
+</header>
 
-    <main>
-        <section class="hero">
-            <h1>Live Sports Streaming</h1>
-            <p>Watch your favorite games live, anytime, anywhere.</p>
-        </section>
+<main>
+<section class="hero">
+<h1>Watch Live Sports</h1>
+<p>Your favorite games, anytime, anywhere.</p>
+</section>
 
-        <section class="featured-channels">
-            <h2>Featured Channels</h2>
-            <div class="channels">
-                <div class="channel-card">
-                    <img src="https://via.placeholder.com/300x150" alt="Channel 1">
-                    <h3>Channel 1</h3>
-                    <a href="channel1.html">Watch Now</a>
-                </div>
-                <div class="channel-card">
-                    <img src="https://via.placeholder.com/300x150" alt="Channel 2">
-                    <h3>Channel 2</h3>
-                    <a href="channel2.html">Watch Now</a>
-                </div>
-                <div class="channel-card">
-                    <img src="https://via.placeholder.com/300x150" alt="Channel 3">
-                    <h3>Channel 3</h3>
-                    <a href="#">Watch Now</a>
-                </div>
-            </div>
-        </section>
-    </main>
+<section class="channels-section">
+<h2>Featured Channels</h2>
+<div class="channels-grid">
+<div class="channel-card">
+<img src="https://via.placeholder.com/300x150" alt="Channel 1">
+<h3>Channel 1</h3>
+<a href="channel1.html">Watch Now</a>
+</div>
+<div class="channel-card">
+<img src="https://via.placeholder.com/300x150" alt="Channel 2">
+<h3>Channel 2</h3>
+<a href="channel2.html">Watch Now</a>
+</div>
+<div class="channel-card">
+<img src="https://via.placeholder.com/300x150" alt="Channel 3">
+<h3>Channel 3</h3>
+<a href="#">Watch Now</a>
+</div>
+</div>
+</section>
+</main>
 
-    <footer>
-        &copy; 2026 Fanatic Stream. All rights reserved.
-    </footer>
+<footer>&copy; 2026 Fanatic Stream</footer>
 </body>
 </html>
