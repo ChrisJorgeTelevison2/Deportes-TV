@@ -3,62 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fanatic Stream</title>
+<title>Fanatic TV</title>
 <style>
-body {margin:0;font-family:Arial,sans-serif;background:#f2f2f2;color:#333;}
-header {background:#1a1a1a;color:#fff;display:flex;justify-content:space-between;align-items:center;padding:15px 30px;}
-header .logo {font-size:1.5rem;font-weight:bold;}
-header nav a {color:white;text-decoration:none;margin-left:20px;}
-header nav a:hover{text-decoration:underline;}
-.hero {background:#0073e6;color:white;padding:60px 30px;text-align:center;}
-.channels-section {padding:30px;}
-.channels-grid {display:flex;flex-wrap:wrap;gap:20px;justify-content:center;}
-.channel-card {background:white;width:300px;border-radius:8px;text-align:center;padding:10px;}
-.channel-card img {width:100%;border-radius:8px;}
-.channel-card a {display:inline-block;margin-top:10px;padding:8px 12px;background:#0073e6;color:white;text-decoration:none;border-radius:4px;}
-.channel-card a:hover{background:#005bb5;}
-footer {background:#1a1a1a;color:white;text-align:center;padding:20px;}
-@media(max-width:768px){.channels-grid{flex-direction:column;align-items:center;}header{flex-direction:column;align-items:flex-start;}header nav{margin-top:10px;}}
+/* Reset */
+* {margin:0; padding:0; box-sizing:border-box;}
+body {font-family:Arial,sans-serif; background:#f2f2f2; color:#333;}
+
+/* Header */
+header {display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:#1a1a1a; color:white;}
+header .logo {font-size:1.8rem; font-weight:bold;}
+header nav a {color:white; text-decoration:none; margin-left:20px;}
+header nav a:hover {text-decoration:underline;}
+header .login-btn {padding:8px 15px; background:#0073e6; color:white; border-radius:5px; text-decoration:none;}
+
+/* Hero */
+.hero {background:#0073e6; color:white; padding:80px 30px; text-align:center;}
+.hero h1 {font-size:2.5rem; margin-bottom:10px;}
+.hero p {font-size:1.2rem;}
+
+/* Live Now Carousel */
+.carousel {display:flex; overflow-x:auto; gap:15px; padding:20px;}
+.carousel::-webkit-scrollbar {display:none;}
+.carousel-card {flex:0 0 auto; width:200px; border-radius:10px; overflow:hidden; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center; transition:transform 0.3s;}
+.carousel-card:hover {transform:scale(1.05);}
+.carousel-card img {width:100%; display:block;}
+.carousel-card h4 {padding:10px 0;}
+.carousel-card a {display:inline-block; margin-bottom:10px; padding:6px 12px; background:#0073e6; color:white; text-decoration:none; border-radius:5px;}
+.carousel-card a:hover {background:#005bb5;}
+
+/* Featured Channels Grid */
+.channels-grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; padding:30px;}
+.channel-card {background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center; transition:transform 0.3s;}
+.channel-card:hover {transform:scale(1.05);}
+.channel-card img {width:100%; display:block;}
+.channel-card h3 {padding:10px 0;}
+.channel-card a {display:inline-block; margin-bottom:10px; padding:8px 12px; background:#0073e6; color:white; text-decoration:none; border-radius:5px;}
+.channel-card a:hover {background:#005bb5;}
+
+/* Footer */
+footer {background:#1a1a1a; color:white; text-align:center; padding:20px; margin-top:40px;}
+
+/* Responsive */
+@media(max-width:768px){
+  .hero h1{font-size:2rem;}
+  .hero p{font-size:1rem;}
+  .carousel-card {width:150px;}
+}
 </style>
 </head>
 <body>
+
 <header>
-<div class="logo">Fanatic Stream</div>
+<div class="logo">Fanatic TV</div>
 <nav>
 <a href="index.html">Home</a>
-<a href="channel1.html">Channel 1</a>
-<a href="channel2.html">Channel 2</a>
+<a href="channel1.html">Sports</a>
+<a href="#">Movies</a>
+<a href="#">News</a>
 </nav>
+<a href="#" class="login-btn">Login</a>
 </header>
 
-<main>
 <section class="hero">
-<h1>Watch Live Sports</h1>
-<p>Your favorite games, anytime, anywhere.</p>
+<h1>Live TV & Sports Streaming</h1>
+<p>Watch your favorite channels live, anytime, anywhere.</p>
 </section>
 
-<section class="channels-section">
-<h2>Featured Channels</h2>
+<section>
+<h2 style="padding:0 30px; margin-top:20px;">Live Now</h2>
+<div class="carousel">
+<div class="carousel-card">
+<img src="https://via.placeholder.com/200x120" alt="ESPN">
+<h4>ESPN</h4>
+<a href="channel1.html">Watch</a>
+</div>
+<div class="carousel-card">
+<img src="https://via.placeholder.com/200x120" alt="FOX Sports">
+<h4>FOX Sports</h4>
+<a href="channel1.html">Watch</a>
+</div>
+<div class="carousel-card">
+<img src="https://via.placeholder.com/200x120" alt="NBA TV">
+<h4>NBA TV</h4>
+<a href="#">Watch</a>
+</div>
+<div class="carousel-card">
+<img src="https://via.placeholder.com/200x120" alt="CNN">
+<h4>CNN</h4>
+<a href="#">Watch</a>
+</div>
+<div class="carousel-card">
+<img src="https://via.placeholder.com/200x120" alt="HBO">
+<h4>HBO</h4>
+<a href="#">Watch</a>
+</div>
+</div>
+</section>
+
+<section>
+<h2 style="padding:0 30px;">Featured Channels</h2>
 <div class="channels-grid">
 <div class="channel-card">
-<img src="https://via.placeholder.com/300x150" alt="Channel 1">
-<h3>Channel 1</h3>
+<img src="https://via.placeholder.com/300x170" alt="ESPN">
+<h3>ESPN</h3>
 <a href="channel1.html">Watch Now</a>
 </div>
 <div class="channel-card">
-<img src="https://via.placeholder.com/300x150" alt="Channel 2">
-<h3>Channel 2</h3>
-<a href="channel2.html">Watch Now</a>
+<img src="https://via.placeholder.com/300x170" alt="FOX Sports">
+<h3>FOX Sports</h3>
+<a href="channel1.html">Watch Now</a>
 </div>
 <div class="channel-card">
-<img src="https://via.placeholder.com/300x150" alt="Channel 3">
-<h3>Channel 3</h3>
+<img src="https://via.placeholder.com/300x170" alt="CNN">
+<h3>CNN</h3>
+<a href="#">Watch Now</a>
+</div>
+<div class="channel-card">
+<img src="https://via.placeholder.com/300x170" alt="NBA TV">
+<h3>NBA TV</h3>
+<a href="#">Watch Now</a>
+</div>
+<div class="channel-card">
+<img src="https://via.placeholder.com/300x170" alt="HBO">
+<h3>HBO</h3>
 <a href="#">Watch Now</a>
 </div>
 </div>
 </section>
-</main>
 
-<footer>&copy; 2026 Fanatic Stream</footer>
+<footer>
+&copy; 2026 Fanatic TV. All rights reserved.
+</footer>
+
 </body>
 </html>
