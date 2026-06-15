@@ -3,133 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TV Player</title>
+<title>Fanatic TV Player</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
 }
 
 body{
-    background:#000;
-    overflow:hidden;
-    font-family:Arial,Helvetica,sans-serif;
+background:#000;
+overflow:hidden;
 }
 
 .player{
-    position:relative;
-    width:100vw;
-    height:100vh;
+position:relative;
+width:100vw;
+height:100vh;
+background:#000;
 }
 
-.player video{
-    width:100%;
-    height:100%;
-    object-fit:cover;
+video{
+width:100%;
+height:100%;
+object-fit:cover;
+background:#000;
 }
 
 .overlay{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(
-        to top,
-        rgba(0,0,0,.65),
-        rgba(0,0,0,.15) 35%,
-        transparent
-    );
+position:absolute;
+inset:0;
+background:linear-gradient(
+to top,
+rgba(0,0,0,.8),
+rgba(0,0,0,.2) 40%,
+transparent
+);
+pointer-events:none;
 }
 
-.info{
-    position:absolute;
-    left:120px;
-    bottom:90px;
-    color:#fff;
-    font-size:48px;
-    font-weight:300;
+.play-button{
+position:absolute;
+bottom:90px;
+left:30px;
+width:80px;
+height:80px;
+border-radius:50%;
+background:rgba(255,255,255,.9);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:35px;
+color:#333;
+cursor:pointer;
+z-index:5;
+}
+
+.program-info{
+position:absolute;
+left:140px;
+bottom:95px;
+color:white;
+z-index:5;
+}
+
+.program-title{
+font-size:42px;
+font-weight:300;
 }
 
 .live{
-    color:#ff2d2d;
-    font-size:28px;
-    margin-top:10px;
+margin-top:8px;
+font-size:24px;
+font-weight:bold;
+color:red;
 }
 
 .progress-container{
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:40px;
-    padding:0 30px;
+position:absolute;
+bottom:40px;
+left:25px;
+right:25px;
+z-index:5;
 }
 
 .progress{
-    height:8px;
-    background:rgba(255,255,255,.25);
-    border-radius:10px;
+height:8px;
+background:rgba(255,255,255,.2);
+border-radius:20px;
+overflow:hidden;
 }
 
 .progress-fill{
-    width:70%;
-    height:100%;
-    background:#ff2020;
-    border-radius:10px;
+width:65%;
+height:100%;
+background:red;
 }
 
-.play-btn{
-    position:absolute;
-    left:35px;
-    bottom:85px;
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    background:rgba(255,255,255,.9);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#444;
-    font-size:32px;
-    backdrop-filter:blur(8px);
-}
-
-.controls{
-    position:absolute;
-    right:30px;
-    bottom:80px;
-    display:flex;
-    gap:12px;
+.right-controls{
+position:absolute;
+right:25px;
+bottom:85px;
+display:flex;
+gap:10px;
+z-index:5;
 }
 
 .control{
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    background:rgba(255,255,255,.85);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#444;
-    font-size:20px;
+width:50px;
+height:50px;
+border-radius:50%;
+background:rgba(255,255,255,.9);
+display:flex;
+justify-content:center;
+align-items:center;
+color:#333;
+font-weight:bold;
+cursor:pointer;
 }
 
 .channel-logo{
-    position:absolute;
-    top:20px;
-    right:20px;
-    background:#d50000;
-    color:white;
-    padding:10px 16px;
-    border-radius:8px;
-    font-weight:bold;
+position:absolute;
+top:20px;
+right:20px;
+background:#c70000;
+color:#fff;
+padding:10px 15px;
+border-radius:8px;
+font-weight:bold;
+z-index:5;
 }
 
 .clock{
-    position:absolute;
-    top:20px;
-    right:120px;
-    color:white;
-    font-size:24px;
+position:absolute;
+top:20px;
+right:120px;
+color:white;
+font-size:24px;
+z-index:5;
+}
+
+.channel-name{
+position:absolute;
+bottom:15px;
+left:20px;
+color:white;
+font-size:20px;
+font-weight:bold;
+z-index:5;
+}
+
+.hidden{
+opacity:0;
+transition:.3s;
 }
 </style>
 </head>
@@ -138,40 +168,107 @@ body{
 
 <div class="player">
 
-    <video autoplay muted loop>
-        <source src="your-stream.mp4" type="video/mp4">
-    </video>
+<video id="video" autoplay muted playsinline></video>
 
-    <div class="overlay"></div>
+<div class="overlay"></div>
 
-    <div class="clock">13:35</div>
+<div class="clock" id="clock">00:00</div>
 
-    <div class="channel-logo">
-        ECDF
-    </div>
+<div class="channel-logo">
+FANATIC TV
+</div>
 
-    <div class="play-btn">
-        ❚❚
-    </div>
+<div class="play-button" id="playBtn">
+❚❚
+</div>
 
-    <div class="info">
-        4:00pm | Partido Amistoso: Ecuador vs Guatemala
-        <div class="live">LIVE</div>
-    </div>
+<div class="program-info">
+<div class="program-title">
+4:00pm | Ecuador vs Guatemala
+</div>
 
-    <div class="controls">
-        <div class="control">☰</div>
-        <div class="control">❚❚</div>
-        <div class="control">HD</div>
-    </div>
+<div class="live">
+LIVE
+</div>
+</div>
 
-    <div class="progress-container">
-        <div class="progress">
-            <div class="progress-fill"></div>
-        </div>
-    </div>
+<div class="right-controls">
+<div class="control">☰</div>
+<div class="control">⏸</div>
+<div class="control">HD</div>
+</div>
+
+<div class="progress-container">
+<div class="progress">
+<div class="progress-fill"></div>
+</div>
+</div>
+
+<div class="channel-name">
+Fanatic TV Sports
+</div>
 
 </div>
+
+<script>
+
+const video = document.getElementById('video');
+
+const streamUrl =
+"https://streamvidex.qzz.io/latamplay/cazetv/index.m3u8";
+
+/* Replace with your M3U8 */
+
+if(Hls.isSupported()){
+
+const hls = new Hls({
+enableWorker:true,
+lowLatencyMode:true
+});
+
+hls.loadSource(streamUrl);
+hls.attachMedia(video);
+
+}else if(video.canPlayType('application/vnd.apple.mpegurl')){
+
+video.src = streamUrl;
+
+}
+
+const playBtn = document.getElementById("playBtn");
+
+playBtn.onclick = () => {
+
+if(video.paused){
+
+video.play();
+playBtn.innerHTML="❚❚";
+
+}else{
+
+video.pause();
+playBtn.innerHTML="▶";
+
+}
+
+};
+
+function updateClock(){
+
+const now = new Date();
+
+document.getElementById("clock").innerHTML =
+now.toLocaleTimeString([],{
+hour:'2-digit',
+minute:'2-digit'
+});
+
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+</script>
 
 </body>
 </html>
