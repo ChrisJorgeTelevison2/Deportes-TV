@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Fanatic TV Player</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -20,6 +20,7 @@ width:100%;
 height:100%;
 background:#000;
 overflow:hidden;
+touch-action:none;
 }
 
 .player{
@@ -29,29 +30,29 @@ height:100vh;
 background:#000;
 }
 
-/* smooth fade system */
-.fade{
-opacity:0;
-transition:opacity .4s ease;
-pointer-events:none;
-}
-
-.show{
-opacity:1 !important;
-pointer-events:auto;
-}
-
 video{
 width:100%;
 height:100%;
 object-fit:cover;
 }
 
-/* UI */
+/* UI fade system */
+.ui{
+opacity:0;
+transition:opacity .35s ease;
+pointer-events:none;
+}
+
+.ui.show{
+opacity:1;
+pointer-events:auto;
+}
+
+/* UI elements */
 .overlay{
 position:absolute;
 inset:0;
-background:linear-gradient(to top, rgba(0,0,0,.75), transparent);
+background:linear-gradient(to top, rgba(0,0,0,.7), transparent);
 }
 
 .play-button{
@@ -66,7 +67,6 @@ display:flex;
 justify-content:center;
 align-items:center;
 font-size:35px;
-cursor:pointer;
 z-index:5;
 }
 
@@ -97,7 +97,6 @@ background:rgba(255,255,255,.9);
 display:flex;
 justify-content:center;
 align-items:center;
-cursor:pointer;
 }
 
 .channel-logo{
@@ -135,40 +134,40 @@ font-weight:bold;
 
 <video id="video" autoplay muted playsinline></video>
 
-<div class="overlay fade" id="ui"></div>
+<div class="ui" id="ui">
 
-<div class="clock fade" id="clock">00:00</div>
+<div class="overlay"></div>
 
-<div class="channel-logo fade"></div>
+<div class="clock" id="clock">00:00</div>
 
-<div class="play-button fade" id="playBtn">❚❚</div>
+<div class="channel-logo">FANATIC TV</div>
 
-<div class="program-info fade">
+<div class="play-button" id="playBtn">❚❚</div>
+
+<div class="program-info">
 <div class="program-title">CAZE TV</div>
 <div class="live">LIVE</div>
 </div>
 
-<div class="right-controls fade">
-<div class="control" id="playPauseBtn">⏸</div>
+<div class="right-controls">
 <div class="control" id="fullscreenBtn">⛶</div>
 </div>
 
-<div class="channel-name fade">Fanatic TV Sports</div>
+<div class="channel-name">Fanatic TV Sports</div>
+
+</div>
 
 </div>
 
 <script>
 
 const video = document.getElementById("video");
+const ui = document.getElementById("ui");
+const playBtn = document.getElementById("playBtn");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
 const player = document.getElementById("player");
 
-const uiElements = document.querySelectorAll(".fade");
-
-const playBtn = document.getElementById("playBtn");
-const playPauseBtn = document.getElementById("playPauseBtn");
-const fullscreenBtn = document.getElementById("fullscreenBtn");
-
-const streamUrl = "https://serendipity.loreofeldenring.site/dailymotion/live/playlist/1.m3u8";
+const streamUrl = "https://streamvidex.qzz.io/latamplay/cazetv/index.m3u8";
 
 /* =========================
    HLS
@@ -183,98 +182,110 @@ video.src = streamUrl;
 }
 
 /* =========================
+   UI SYSTEM
+========================= */
+let hideTimer;
+
+function showUI(){
+ui.classList.add("show");
+resetTimer();
+}
+
+function hideUI(){
+ui.classList.remove("show");
+}
+
+function resetTimer(){
+clearTimeout(hideTimer);
+hideTimer = setTimeout(() => {
+if(video.paused === false){
+hideUI();
+}
+}, 2500);
+}
+
+/* =========================
+   TAP CONTROLS (MOBILE)
+========================= */
+let lastTap = 0;
+
+player.addEventListener("touchend", (e) => {
+const now = new Date().getTime();
+
+if(now - lastTap < 300){
+togglePlay(); // double tap
+}else{
+showUI(); // single tap
+}
+
+lastTap = now;
+});
+
+/* =========================
+   SWIPE CONTROLS
+========================= */
+let startX, startY;
+
+player.addEventListener("touchstart", (e) => {
+startX = e.touches[0].clientX;
+startY = e.touches[0].clientY;
+});
+
+player.addEventListener("touchend", (e) => {
+let dx = e.changedTouches[0].clientX - startX;
+let dy = e.changedTouches[0].clientY - startY;
+
+if(Math.abs(dx) > 50){
+if(dx > 0){
+video.currentTime += 5; // right swipe
+}else{
+video.currentTime -= 5; // left swipe
+}
+}
+
+if(Math.abs(dy) > 50){
+if(dy < 0){
+video.volume = Math.min(1, video.volume + 0.1); // up
+}else{
+video.volume = Math.max(0, video.volume - 0.1); // down
+}
+}
+
+});
+
+/* =========================
    PLAY / PAUSE
 ========================= */
 function togglePlay(){
 if(video.paused){
 video.play();
 playBtn.innerHTML = "❚❚";
-playPauseBtn.innerHTML = "⏸";
 hideUI();
 }else{
 video.pause();
 playBtn.innerHTML = "▶";
-playPauseBtn.innerHTML = "▶";
 showUI();
 }
 }
 
 playBtn.onclick = togglePlay;
-playPauseBtn.onclick = togglePlay;
 
 /* =========================
-   FULLSCREEN
+   FULLSCREEN (MOBILE SAFE)
 ========================= */
 fullscreenBtn.onclick = async () => {
+try {
 if(!document.fullscreenElement){
-await player.requestFullscreen();
-hideUI();
+await player.requestFullscreen?.();
 }else{
-await document.exitFullscreen();
-showUI();
+await document.exitFullscreen?.();
 }
+} catch(e){}
 };
 
 /* =========================
-   UI SYSTEM (IMPORTANT)
+   CLOCK
 ========================= */
-
-let hideTimer;
-
-function showUI(){
-uiElements.forEach(el => el.classList.add("show"));
-resetTimer();
-}
-
-function hideUI(){
-uiElements.forEach(el => el.classList.remove("show"));
-}
-
-function resetTimer(){
-clearTimeout(hideTimer);
-hideTimer = setTimeout(() => {
-if(document.fullscreenElement && !video.paused){
-hideUI();
-}
-}, 3000);
-}
-
-/* mouse/keyboard shows UI */
-document.addEventListener("mousemove", showUI);
-document.addEventListener("keydown", (e) => {
-showUI();
-
-if(e.code === "Space"){
-e.preventDefault();
-togglePlay();
-}
-
-/* volume */
-if(e.code === "ArrowUp"){
-video.volume = Math.min(1, video.volume + 0.1);
-}
-
-if(e.code === "ArrowDown"){
-video.volume = Math.max(0, video.volume - 0.1);
-}
-
-/* seek */
-if(e.code === "ArrowRight"){
-video.currentTime += 5;
-}
-
-if(e.code === "ArrowLeft"){
-video.currentTime -= 5;
-}
-});
-
-/* pause/play UI rules */
-video.addEventListener("pause", showUI);
-video.addEventListener("play", () => {
-if(document.fullscreenElement) hideUI();
-});
-
-/* clock */
 function updateClock(){
 const now = new Date();
 document.getElementById("clock").innerHTML =
@@ -282,6 +293,9 @@ now.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
 }
 setInterval(updateClock,1000);
 updateClock();
+
+/* init */
+showUI();
 
 </script>
 
