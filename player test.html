@@ -20,7 +20,6 @@ width:100%;
 height:100%;
 background:#000;
 overflow:hidden;
-touch-action:none;
 }
 
 .player{
@@ -34,12 +33,25 @@ video{
 width:100%;
 height:100%;
 object-fit:cover;
+background:#000;
 }
 
-/* UI fade system */
+/* FAKE FULLSCREEN FOR IOS */
+.player.ios-fullscreen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:9999;
+}
+
+/* UI */
 .ui{
+position:absolute;
+inset:0;
 opacity:0;
-transition:opacity .35s ease;
+transition:opacity .3s ease;
 pointer-events:none;
 }
 
@@ -48,7 +60,6 @@ opacity:1;
 pointer-events:auto;
 }
 
-/* UI elements */
 .overlay{
 position:absolute;
 inset:0;
@@ -69,16 +80,6 @@ align-items:center;
 font-size:35px;
 z-index:5;
 }
-
-.program-info{
-position:absolute;
-left:140px;
-bottom:95px;
-color:white;
-z-index:5;
-}
-
-.live{ color:red; font-weight:bold; }
 
 .right-controls{
 position:absolute;
@@ -132,7 +133,11 @@ font-weight:bold;
 
 <div class="player" id="player">
 
-<video id="video" autoplay muted playsinline></video>
+<video id="video"
+autoplay
+muted
+playsinline
+webkit-playsinline></video>
 
 <div class="ui" id="ui">
 
@@ -143,11 +148,6 @@ font-weight:bold;
 <div class="channel-logo">FANATIC TV</div>
 
 <div class="play-button" id="playBtn">❚❚</div>
-
-<div class="program-info">
-<div class="program-title">CAZE TV</div>
-<div class="live">LIVE</div>
-</div>
 
 <div class="right-controls">
 <div class="control" id="fullscreenBtn">⛶</div>
@@ -162,10 +162,8 @@ font-weight:bold;
 <script>
 
 const video = document.getElementById("video");
-const ui = document.getElementById("ui");
-const playBtn = document.getElementById("playBtn");
-const fullscreenBtn = document.getElementById("fullscreenBtn");
 const player = document.getElementById("player");
+const ui = document.getElementById("ui");
 
 const streamUrl = "https://streamvidex.qzz.io/latamplay/cazetv/index.m3u8";
 
@@ -182,105 +180,60 @@ video.src = streamUrl;
 }
 
 /* =========================
-   UI SYSTEM
+   UI CONTROL
 ========================= */
 let hideTimer;
 
 function showUI(){
 ui.classList.add("show");
-resetTimer();
+clearTimeout(hideTimer);
+hideTimer = setTimeout(() => {
+if(!video.paused) ui.classList.remove("show");
+}, 2500);
 }
 
 function hideUI(){
 ui.classList.remove("show");
 }
 
-function resetTimer(){
-clearTimeout(hideTimer);
-hideTimer = setTimeout(() => {
-if(video.paused === false){
-hideUI();
-}
-}, 2500);
-}
-
-/* =========================
-   TAP CONTROLS (MOBILE)
-========================= */
-let lastTap = 0;
-
-player.addEventListener("touchend", (e) => {
-const now = new Date().getTime();
-
-if(now - lastTap < 300){
-togglePlay(); // double tap
-}else{
-showUI(); // single tap
-}
-
-lastTap = now;
-});
-
-/* =========================
-   SWIPE CONTROLS
-========================= */
-let startX, startY;
-
-player.addEventListener("touchstart", (e) => {
-startX = e.touches[0].clientX;
-startY = e.touches[0].clientY;
-});
-
-player.addEventListener("touchend", (e) => {
-let dx = e.changedTouches[0].clientX - startX;
-let dy = e.changedTouches[0].clientY - startY;
-
-if(Math.abs(dx) > 50){
-if(dx > 0){
-video.currentTime += 5; // right swipe
-}else{
-video.currentTime -= 5; // left swipe
-}
-}
-
-if(Math.abs(dy) > 50){
-if(dy < 0){
-video.volume = Math.min(1, video.volume + 0.1); // up
-}else{
-video.volume = Math.max(0, video.volume - 0.1); // down
-}
-}
-
-});
+/* tap = show UI */
+player.addEventListener("touchstart", showUI);
 
 /* =========================
    PLAY / PAUSE
 ========================= */
-function togglePlay(){
+document.getElementById("playBtn").onclick = () => {
 if(video.paused){
 video.play();
-playBtn.innerHTML = "❚❚";
 hideUI();
 }else{
 video.pause();
-playBtn.innerHTML = "▶";
 showUI();
 }
-}
-
-playBtn.onclick = togglePlay;
+};
 
 /* =========================
-   FULLSCREEN (MOBILE SAFE)
+   FULLSCREEN SAFE (ANDROID + IOS)
 ========================= */
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+
 fullscreenBtn.onclick = async () => {
-try {
-if(!document.fullscreenElement){
-await player.requestFullscreen?.();
-}else{
-await document.exitFullscreen?.();
+
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+if(isIOS){
+player.classList.add("ios-fullscreen");
+showUI();
+return;
 }
-} catch(e){}
+
+try{
+if(!document.fullscreenElement){
+await player.requestFullscreen();
+}else{
+await document.exitFullscreen();
+}
+}catch(e){}
 };
 
 /* =========================
@@ -294,7 +247,6 @@ now.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
 setInterval(updateClock,1000);
 updateClock();
 
-/* init */
 showUI();
 
 </script>
