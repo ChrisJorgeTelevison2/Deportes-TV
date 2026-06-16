@@ -37,33 +37,23 @@ background:#000;
 display:block;
 }
 
-/* =========================
-   FULLSCREEN BASE STATE
-========================= */
-.player:fullscreen .overlay,
-.player:fullscreen .play-button,
-.player:fullscreen .program-info,
-.player:fullscreen .right-controls,
-.player:fullscreen .clock,
-.player:fullscreen .channel-logo,
-.player:fullscreen .channel-name,
-.player:fullscreen .progress-container{
-display:none !important;
+/* ONLY fullscreen sizing (no UI logic here) */
+.player:fullscreen{
+width:100vw;
+height:100vh;
+background:#000;
 }
 
-/* =========================
-   FULLSCREEN PAUSED STATE
-   (UI comes back)
-========================= */
-.player:fullscreen.paused-ui .overlay,
-.player:fullscreen.paused-ui .play-button,
-.player:fullscreen.paused-ui .program-info,
-.player:fullscreen.paused-ui .right-controls,
-.player:fullscreen.paused-ui .clock,
-.player:fullscreen.paused-ui .channel-logo,
-.player:fullscreen.paused-ui .channel-name,
-.player:fullscreen.paused-ui .progress-container{
-display:block !important;
+/* UI hidden state controlled ONLY by JS */
+.player.hide-ui .overlay,
+.player.hide-ui .play-button,
+.player.hide-ui .program-info,
+.player.hide-ui .right-controls,
+.player.hide-ui .clock,
+.player.hide-ui .channel-logo,
+.player.hide-ui .channel-name,
+.player.hide-ui .progress-container{
+display:none !important;
 }
 
 /* UI ELEMENTS */
@@ -203,8 +193,9 @@ z-index:5;
 
 <script>
 
-const video = document.getElementById('video');
-const player = document.getElementById('player');
+const video = document.getElementById("video");
+const player = document.getElementById("player");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 const streamUrl =
 "https://streamvidex.qzz.io/latamplay/cazetv/index.m3u8";
@@ -257,17 +248,16 @@ playBtn.onclick = togglePlay;
 playPauseBtn.onclick = togglePlay;
 
 /* =========================
-   FULLSCREEN LOGIC
+   FULLSCREEN
 ========================= */
-const fullscreenBtn = document.getElementById("fullscreenBtn");
-
 fullscreenBtn.onclick = async () => {
 try {
 if (!document.fullscreenElement) {
 await player.requestFullscreen();
+player.classList.add("hide-ui"); // start clean
 } else {
 await document.exitFullscreen();
-player.classList.remove("paused-ui");
+player.classList.remove("hide-ui");
 }
 } catch (e) {
 console.log(e);
@@ -275,23 +265,25 @@ console.log(e);
 };
 
 /* =========================
-   PAUSE SHOW UI IN FULLSCREEN
+   PAUSE = SHOW UI (fullscreen only)
 ========================= */
 video.addEventListener("pause", () => {
 if (document.fullscreenElement) {
-player.classList.add("paused-ui");
+player.classList.remove("hide-ui");
 }
 });
 
-/* HIDE UI ON PLAY */
+/* PLAY = HIDE UI */
 video.addEventListener("play", () => {
-player.classList.remove("paused-ui");
+if (document.fullscreenElement) {
+player.classList.add("hide-ui");
+}
 });
 
-/* RESET ON EXIT FULLSCREEN */
+/* EXIT FULLSCREEN RESET */
 document.addEventListener("fullscreenchange", () => {
 if (!document.fullscreenElement) {
-player.classList.remove("paused-ui");
+player.classList.remove("hide-ui");
 }
 });
 
@@ -302,8 +294,8 @@ function updateClock() {
 const now = new Date();
 document.getElementById("clock").innerHTML =
 now.toLocaleTimeString([], {
-hour: '2-digit',
-minute: '2-digit'
+hour: "2-digit",
+minute: "2-digit"
 });
 }
 
