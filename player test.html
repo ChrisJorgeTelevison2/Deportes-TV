@@ -124,6 +124,7 @@ align-items:center;
 color:#333;
 font-weight:bold;
 cursor:pointer;
+user-select:none;
 }
 
 .channel-logo{
@@ -156,11 +157,6 @@ font-size:20px;
 font-weight:bold;
 z-index:5;
 }
-
-.hidden{
-opacity:0;
-transition:.3s;
-}
 </style>
 </head>
 
@@ -184,7 +180,7 @@ FANATIC TV
 
 <div class="program-info">
 <div class="program-title">
-4:00pm | Ecuador vs Guatemala
+CAZE TV
 </div>
 
 <div class="live">
@@ -193,9 +189,19 @@ LIVE
 </div>
 
 <div class="right-controls">
-<div class="control">☰</div>
-<div class="control">⏸</div>
-<div class="control">HD</div>
+
+<div class="control" id="playPauseBtn">
+⏸
+</div>
+
+<div class="control">
+HD
+</div>
+
+<div class="control" id="fullscreenBtn">
+⛶
+</div>
+
 </div>
 
 <div class="progress-container">
@@ -217,8 +223,6 @@ const video = document.getElementById('video');
 const streamUrl =
 "https://streamvidex.qzz.io/latamplay/cazetv/index.m3u8";
 
-/* Replace with your M3U8 */
-
 if(Hls.isSupported()){
 
 const hls = new Hls({
@@ -235,6 +239,8 @@ video.src = streamUrl;
 
 }
 
+// Main Play Button
+
 const playBtn = document.getElementById("playBtn");
 
 playBtn.onclick = () => {
@@ -242,16 +248,65 @@ playBtn.onclick = () => {
 if(video.paused){
 
 video.play();
-playBtn.innerHTML="❚❚";
+playBtn.innerHTML = "❚❚";
+playPauseBtn.innerHTML = "⏸";
 
 }else{
 
 video.pause();
-playBtn.innerHTML="▶";
+playBtn.innerHTML = "▶";
+playPauseBtn.innerHTML = "▶";
 
 }
 
 };
+
+// Right Control Play Button
+
+const playPauseBtn =
+document.getElementById("playPauseBtn");
+
+playPauseBtn.onclick = () => {
+
+if(video.paused){
+
+video.play();
+playPauseBtn.innerHTML = "⏸";
+playBtn.innerHTML = "❚❚";
+
+}else{
+
+video.pause();
+playPauseBtn.innerHTML = "▶";
+playBtn.innerHTML = "▶";
+
+}
+
+};
+
+// Fullscreen Button
+
+const fullscreenBtn =
+document.getElementById("fullscreenBtn");
+
+const player =
+document.querySelector(".player");
+
+fullscreenBtn.onclick = () => {
+
+if(!document.fullscreenElement){
+
+player.requestFullscreen();
+
+}else{
+
+document.exitFullscreen();
+
+}
+
+};
+
+// Clock
 
 function updateClock(){
 
