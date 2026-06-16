@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +37,9 @@ background:#000;
 display:block;
 }
 
-/* ✅ FULLSCREEN HIDES EVERYTHING */
+/* =========================
+   FULLSCREEN BASE STATE
+========================= */
 .player:fullscreen .overlay,
 .player:fullscreen .play-button,
 .player:fullscreen .program-info,
@@ -51,6 +51,22 @@ display:block;
 display:none !important;
 }
 
+/* =========================
+   FULLSCREEN PAUSED STATE
+   (UI comes back)
+========================= */
+.player:fullscreen.paused-ui .overlay,
+.player:fullscreen.paused-ui .play-button,
+.player:fullscreen.paused-ui .program-info,
+.player:fullscreen.paused-ui .right-controls,
+.player:fullscreen.paused-ui .clock,
+.player:fullscreen.paused-ui .channel-logo,
+.player:fullscreen.paused-ui .channel-name,
+.player:fullscreen.paused-ui .progress-container{
+display:block !important;
+}
+
+/* UI ELEMENTS */
 .overlay{
 position:absolute;
 inset:0;
@@ -193,8 +209,11 @@ const player = document.getElementById('player');
 const streamUrl =
 "https://streamvidex.qzz.io/latamplay/cazetv/index.m3u8";
 
-// HLS
+/* =========================
+   HLS
+========================= */
 if (Hls.isSupported()) {
+
 const hls = new Hls({
 enableWorker: true,
 lowLatencyMode: true
@@ -206,14 +225,19 @@ hls.attachMedia(video);
 hls.on(Hls.Events.MANIFEST_PARSED, () => {
 video.play().catch(() => {});
 });
+
 } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+
 video.src = streamUrl;
+
 video.addEventListener('loadedmetadata', () => {
 video.play().catch(() => {});
 });
 }
 
-// PLAY / PAUSE
+/* =========================
+   PLAY / PAUSE
+========================= */
 const playBtn = document.getElementById("playBtn");
 const playPauseBtn = document.getElementById("playPauseBtn");
 
@@ -232,7 +256,9 @@ playPauseBtn.innerHTML = "▶";
 playBtn.onclick = togglePlay;
 playPauseBtn.onclick = togglePlay;
 
-// FULLSCREEN (clean)
+/* =========================
+   FULLSCREEN LOGIC
+========================= */
 const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 fullscreenBtn.onclick = async () => {
@@ -241,13 +267,37 @@ if (!document.fullscreenElement) {
 await player.requestFullscreen();
 } else {
 await document.exitFullscreen();
+player.classList.remove("paused-ui");
 }
 } catch (e) {
 console.log(e);
 }
 };
 
-// CLOCK
+/* =========================
+   PAUSE SHOW UI IN FULLSCREEN
+========================= */
+video.addEventListener("pause", () => {
+if (document.fullscreenElement) {
+player.classList.add("paused-ui");
+}
+});
+
+/* HIDE UI ON PLAY */
+video.addEventListener("play", () => {
+player.classList.remove("paused-ui");
+});
+
+/* RESET ON EXIT FULLSCREEN */
+document.addEventListener("fullscreenchange", () => {
+if (!document.fullscreenElement) {
+player.classList.remove("paused-ui");
+}
+});
+
+/* =========================
+   CLOCK
+========================= */
 function updateClock() {
 const now = new Date();
 document.getElementById("clock").innerHTML =
