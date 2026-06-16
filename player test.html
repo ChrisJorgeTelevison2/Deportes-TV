@@ -1,119 +1,102 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HLS Player</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitmovin Player Example</title>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- Bitmovin Player -->
+    <script src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
 
-<style>
-html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    background:#000;
-    overflow:hidden;
-}
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            width: 100%;
+            height: 100%;
+        }
 
-.player{
-    position:relative;
-    width:100vw;
-    height:100vh;
-    background:#000;
-}
-
-.player:fullscreen{
-    width:100vw;
-    height:100vh;
-}
-
-video{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    background:#000;
-}
-
-.controls{
-    position:absolute;
-    bottom:20px;
-    right:20px;
-    z-index:10;
-}
-
-button{
-    padding:10px 15px;
-    font-size:16px;
-    cursor:pointer;
-}
-</style>
+        #player-container {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
 
-<div class="player" id="player">
-    <video id="video" autoplay muted playsinline></video>
+    <div id="player-container"></div>
 
-    <div class="controls">
-        <button id="fullscreenBtn">Fullscreen</button>
-    </div>
-</div>
+    <script>
+        const conf = {
+            key: '<YOUR PLAYER KEY>'
+        };
 
-<script>
+        const source = {
+            dash: 'https://bitmovin-a.akamaihd.net/498364_fcb0257026d0bd3ee0ba3aad95674188/manifest.mpd',
+            hls: 'https://bitmovin-a.akamaihd.net/498364_fcb0257026d0bd3ee0ba3aad95674188/playlist.m3u8',
+            poster: 'https://bitmovin-a.akamaihd.net/498364_fcb0257026d0bd3ee0ba3aad95674188/poster.jpg'
+        };
 
-const video = document.getElementById("video");
-const player = document.getElementById("player");
+        let hidden = false;
+        let played = false;
 
-// Try the proxied URL
-const streamUrl =
-"https://cors.globetv.app/http://201.151.118.136:8000/play/a00g/index.m3u8";
+        const playerContainer = document.getElementById('player-container');
 
-if (Hls.isSupported()) {
+        bitmovin.player.Player.addModule(
+            bitmovin.analytics.PlayerModule
+        );
 
-    const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true
-    });
+        const player = new bitmovin.player.Player(
+            playerContainer,
+            conf
+        );
 
-    hls.loadSource(streamUrl);
-    hls.attachMedia(video);
+        player.load(source).then(function () {
 
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().catch(err => console.log(err));
-    });
+            player.on(
+                bitmovin.player.PlayerEvent.TimeChanged,
+                function () {
+                    if (
+                        player.getCurrentTime() >= 29.081333 &&
+                        player.getCurrentTime() < 41.138666
+                    ) {
+                        const topBar = document.getElementsByClassName(
+                            'bmpui-ui-container bmpui-controlbar-top'
+                        )[0];
 
-    hls.on(Hls.Events.ERROR, (event, data) => {
-        console.log("HLS Error:", data);
-    });
+                        if (topBar) {
+                            topBar.style.display = 'none';
+                        }
 
-} else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+                        hidden = true;
+                        played = true;
+                    } else if (hidden) {
+                        const topBar = document.getElementsByClassName(
+                            'bmpui-ui-container bmpui-controlbar-top'
+                        )[0];
 
-    video.src = streamUrl;
+                        if (topBar) {
+                            topBar.style.display = 'block';
+                        }
+                    }
+                }
+            );
 
-    video.addEventListener("loadedmetadata", () => {
-        video.play().catch(err => console.log(err));
-    });
-}
+            player.on(
+                bitmovin.player.PlayerEvent.Seek,
+                function (data) {
+                    if (data.seekTarget > 29 && !played) {
+                        player.seek(29);
+                        played = true;
+                    }
+                }
+            );
 
-// Fullscreen
-document.getElementById("fullscreenBtn").onclick = async () => {
-
-    try {
-
-        if (!document.fullscreenElement) {
-            await player.requestFullscreen();
-        } else {
-            await document.exitFullscreen();
-        }
-
-    } catch (err) {
-        console.log("Fullscreen Error:", err);
-    }
-};
-
-</script>
+        }).catch(function (error) {
+            console.error('Error while loading source:', error);
+        });
+    </script>
 
 </body>
 </html>
