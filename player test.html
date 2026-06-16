@@ -29,44 +29,29 @@ height:100vh;
 background:#000;
 }
 
+/* smooth fade system */
+.fade{
+opacity:0;
+transition:opacity .4s ease;
+pointer-events:none;
+}
+
+.show{
+opacity:1 !important;
+pointer-events:auto;
+}
+
 video{
 width:100%;
 height:100%;
 object-fit:cover;
-background:#000;
-display:block;
 }
 
-/* ONLY fullscreen sizing (no UI logic here) */
-.player:fullscreen{
-width:100vw;
-height:100vh;
-background:#000;
-}
-
-/* UI hidden state controlled ONLY by JS */
-.player.hide-ui .overlay,
-.player.hide-ui .play-button,
-.player.hide-ui .program-info,
-.player.hide-ui .right-controls,
-.player.hide-ui .clock,
-.player.hide-ui .channel-logo,
-.player.hide-ui .channel-name,
-.player.hide-ui .progress-container{
-display:none !important;
-}
-
-/* UI ELEMENTS */
+/* UI */
 .overlay{
 position:absolute;
 inset:0;
-background:linear-gradient(
-to top,
-rgba(0,0,0,.8),
-rgba(0,0,0,.2) 40%,
-transparent
-);
-pointer-events:none;
+background:linear-gradient(to top, rgba(0,0,0,.75), transparent);
 }
 
 .play-button{
@@ -81,7 +66,6 @@ display:flex;
 justify-content:center;
 align-items:center;
 font-size:35px;
-color:#333;
 cursor:pointer;
 z-index:5;
 }
@@ -94,17 +78,7 @@ color:white;
 z-index:5;
 }
 
-.program-title{
-font-size:42px;
-font-weight:300;
-}
-
-.live{
-margin-top:8px;
-font-size:24px;
-font-weight:bold;
-color:red;
-}
+.live{ color:red; font-weight:bold; }
 
 .right-controls{
 position:absolute;
@@ -123,10 +97,7 @@ background:rgba(255,255,255,.9);
 display:flex;
 justify-content:center;
 align-items:center;
-color:#333;
-font-weight:bold;
 cursor:pointer;
-user-select:none;
 }
 
 .channel-logo{
@@ -137,8 +108,6 @@ background:#c70000;
 color:#fff;
 padding:10px 15px;
 border-radius:8px;
-font-weight:bold;
-z-index:5;
 }
 
 .clock{
@@ -147,7 +116,6 @@ top:20px;
 right:120px;
 color:white;
 font-size:24px;
-z-index:5;
 }
 
 .channel-name{
@@ -157,7 +125,6 @@ left:20px;
 color:white;
 font-size:20px;
 font-weight:bold;
-z-index:5;
 }
 </style>
 </head>
@@ -168,26 +135,25 @@ z-index:5;
 
 <video id="video" autoplay muted playsinline></video>
 
-<div class="overlay"></div>
+<div class="overlay fade" id="ui"></div>
 
-<div class="clock" id="clock">00:00</div>
+<div class="clock fade" id="clock">00:00</div>
 
-<div class="channel-logo">FANATIC TV</div>
+<div class="channel-logo fade">FANATIC TV</div>
 
-<div class="play-button" id="playBtn">❚❚</div>
+<div class="play-button fade" id="playBtn">❚❚</div>
 
-<div class="program-info">
+<div class="program-info fade">
 <div class="program-title">CAZE TV</div>
 <div class="live">LIVE</div>
 </div>
 
-<div class="right-controls">
+<div class="right-controls fade">
 <div class="control" id="playPauseBtn">⏸</div>
-<div class="control">HD</div>
 <div class="control" id="fullscreenBtn">⛶</div>
 </div>
 
-<div class="channel-name">Fanatic TV Sports</div>
+<div class="channel-name fade">Fanatic TV Sports</div>
 
 </div>
 
@@ -195,52 +161,41 @@ z-index:5;
 
 const video = document.getElementById("video");
 const player = document.getElementById("player");
+
+const uiElements = document.querySelectorAll(".fade");
+
+const playBtn = document.getElementById("playBtn");
+const playPauseBtn = document.getElementById("playPauseBtn");
 const fullscreenBtn = document.getElementById("fullscreenBtn");
 
-const streamUrl =
-"https://streamvidex.qzz.io/latamplay/cazetv/index.m3u8";
+const streamUrl = "https://streamvidex.qzz.io/latamplay/cazetv/index.m3u8";
 
 /* =========================
    HLS
 ========================= */
 if (Hls.isSupported()) {
-
-const hls = new Hls({
-enableWorker: true,
-lowLatencyMode: true
-});
-
+const hls = new Hls();
 hls.loadSource(streamUrl);
 hls.attachMedia(video);
-
-hls.on(Hls.Events.MANIFEST_PARSED, () => {
-video.play().catch(() => {});
-});
-
-} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-
+hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+} else {
 video.src = streamUrl;
-
-video.addEventListener('loadedmetadata', () => {
-video.play().catch(() => {});
-});
 }
 
 /* =========================
    PLAY / PAUSE
 ========================= */
-const playBtn = document.getElementById("playBtn");
-const playPauseBtn = document.getElementById("playPauseBtn");
-
-function togglePlay() {
-if (video.paused) {
+function togglePlay(){
+if(video.paused){
 video.play();
 playBtn.innerHTML = "❚❚";
 playPauseBtn.innerHTML = "⏸";
-} else {
+hideUI();
+}else{
 video.pause();
 playBtn.innerHTML = "▶";
 playPauseBtn.innerHTML = "▶";
+showUI();
 }
 }
 
@@ -251,55 +206,81 @@ playPauseBtn.onclick = togglePlay;
    FULLSCREEN
 ========================= */
 fullscreenBtn.onclick = async () => {
-try {
-if (!document.fullscreenElement) {
+if(!document.fullscreenElement){
 await player.requestFullscreen();
-player.classList.add("hide-ui"); // start clean
-} else {
+hideUI();
+}else{
 await document.exitFullscreen();
-player.classList.remove("hide-ui");
-}
-} catch (e) {
-console.log(e);
+showUI();
 }
 };
 
 /* =========================
-   PAUSE = SHOW UI (fullscreen only)
+   UI SYSTEM (IMPORTANT)
 ========================= */
-video.addEventListener("pause", () => {
-if (document.fullscreenElement) {
-player.classList.remove("hide-ui");
+
+let hideTimer;
+
+function showUI(){
+uiElements.forEach(el => el.classList.add("show"));
+resetTimer();
+}
+
+function hideUI(){
+uiElements.forEach(el => el.classList.remove("show"));
+}
+
+function resetTimer(){
+clearTimeout(hideTimer);
+hideTimer = setTimeout(() => {
+if(document.fullscreenElement && !video.paused){
+hideUI();
+}
+}, 3000);
+}
+
+/* mouse/keyboard shows UI */
+document.addEventListener("mousemove", showUI);
+document.addEventListener("keydown", (e) => {
+showUI();
+
+if(e.code === "Space"){
+e.preventDefault();
+togglePlay();
+}
+
+/* volume */
+if(e.code === "ArrowUp"){
+video.volume = Math.min(1, video.volume + 0.1);
+}
+
+if(e.code === "ArrowDown"){
+video.volume = Math.max(0, video.volume - 0.1);
+}
+
+/* seek */
+if(e.code === "ArrowRight"){
+video.currentTime += 5;
+}
+
+if(e.code === "ArrowLeft"){
+video.currentTime -= 5;
 }
 });
 
-/* PLAY = HIDE UI */
+/* pause/play UI rules */
+video.addEventListener("pause", showUI);
 video.addEventListener("play", () => {
-if (document.fullscreenElement) {
-player.classList.add("hide-ui");
-}
+if(document.fullscreenElement) hideUI();
 });
 
-/* EXIT FULLSCREEN RESET */
-document.addEventListener("fullscreenchange", () => {
-if (!document.fullscreenElement) {
-player.classList.remove("hide-ui");
-}
-});
-
-/* =========================
-   CLOCK
-========================= */
-function updateClock() {
+/* clock */
+function updateClock(){
 const now = new Date();
 document.getElementById("clock").innerHTML =
-now.toLocaleTimeString([], {
-hour: "2-digit",
-minute: "2-digit"
-});
+now.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
 }
-
-setInterval(updateClock, 1000);
+setInterval(updateClock,1000);
 updateClock();
 
 </script>
