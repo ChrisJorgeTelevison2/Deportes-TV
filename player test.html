@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,21 +39,15 @@ background:#000;
 display:block;
 }
 
-/* fullscreen */
-.player:fullscreen{
-width:100vw;
-height:100vh;
-}
-
-/* UI hidden in fullscreen */
-.player.is-fullscreen .overlay,
-.player.is-fullscreen .play-button,
-.player.is-fullscreen .program-info,
-.player.is-fullscreen .right-controls,
-.player.is-fullscreen .clock,
-.player.is-fullscreen .channel-logo,
-.player.is-fullscreen .channel-name,
-.player.is-fullscreen .progress-container{
+/* ✅ FULLSCREEN HIDES EVERYTHING */
+.player:fullscreen .overlay,
+.player:fullscreen .play-button,
+.player:fullscreen .program-info,
+.player:fullscreen .right-controls,
+.player:fullscreen .clock,
+.player:fullscreen .channel-logo,
+.player:fullscreen .channel-name,
+.player:fullscreen .progress-container{
 display:none !important;
 }
 
@@ -197,8 +193,8 @@ const player = document.getElementById('player');
 const streamUrl =
 "https://streamvidex.qzz.io/latamplay/cazetv/index.m3u8";
 
+// HLS
 if (Hls.isSupported()) {
-
 const hls = new Hls({
 enableWorker: true,
 lowLatencyMode: true
@@ -207,18 +203,14 @@ lowLatencyMode: true
 hls.loadSource(streamUrl);
 hls.attachMedia(video);
 
-hls.on(Hls.Events.MANIFEST_PARSED, function () {
+hls.on(Hls.Events.MANIFEST_PARSED, () => {
 video.play().catch(() => {});
 });
-
 } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-
 video.src = streamUrl;
-
 video.addEventListener('loadedmetadata', () => {
 video.play().catch(() => {});
 });
-
 }
 
 // PLAY / PAUSE
@@ -226,7 +218,6 @@ const playBtn = document.getElementById("playBtn");
 const playPauseBtn = document.getElementById("playPauseBtn");
 
 function togglePlay() {
-
 if (video.paused) {
 video.play();
 playBtn.innerHTML = "❚❚";
@@ -236,39 +227,25 @@ video.pause();
 playBtn.innerHTML = "▶";
 playPauseBtn.innerHTML = "▶";
 }
-
 }
 
 playBtn.onclick = togglePlay;
 playPauseBtn.onclick = togglePlay;
 
-// FULLSCREEN + HIDE UI
+// FULLSCREEN (clean)
 const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 fullscreenBtn.onclick = async () => {
-
 try {
-
 if (!document.fullscreenElement) {
 await player.requestFullscreen();
-player.classList.add("is-fullscreen");
 } else {
 await document.exitFullscreen();
-player.classList.remove("is-fullscreen");
 }
-
-} catch (err) {
-console.log("Fullscreen Error:", err);
+} catch (e) {
+console.log(e);
 }
-
 };
-
-// FIX: handle ESC fullscreen exit
-document.addEventListener("fullscreenchange", () => {
-if (!document.fullscreenElement) {
-player.classList.remove("is-fullscreen");
-}
-});
 
 // CLOCK
 function updateClock() {
